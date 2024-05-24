@@ -15,13 +15,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.*;
 
 public class HelloController implements Initializable {
     Server serv = new Server();
 
     public static ObservableList<String> Log = FXCollections.observableArrayList();
-
+    Calendar now = Calendar.getInstance();
 
 
 
@@ -36,17 +37,17 @@ public class HelloController implements Initializable {
     @FXML
     private void OnOKClicked() throws IOException {
         String resp;
-        Log.add(MainTextField.getText());
+        Log.add("["+Server.now.get(Calendar.HOUR_OF_DAY)+":"+Server.now.get(Calendar.MINUTE)+"]"+MainTextField.getText());
         ProcessBuilder builder = new ProcessBuilder();
         builder.command("sh", "-c", MainTextField.getText());
-        builder.directory(new File("/home/me/IdeaProjects/demo/src/main/java/com/lab1/demo/"));
+        builder.directory(new File(Server.fullpath));
 
         Process process = builder.start();
         BufferedReader output = new BufferedReader(new InputStreamReader(process.getInputStream()));
         for(resp=output.readLine(); resp!=null;resp=output.readLine()) {
 
             System.out.println("Respons:" + resp);
-            Log.add(resp);
+            Log.add("Response:"+resp);
         }
 
         output.close();
@@ -56,7 +57,7 @@ public class HelloController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            Server.start(8080);
+            Server.start(8090);
            serv.start();
            Log.addListener((javafx.beans.Observable observable) ->{
 
